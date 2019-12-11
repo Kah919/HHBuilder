@@ -8,11 +8,12 @@ body.innerHTML += `
 
 const form = document.querySelector('form');
 const add = document.querySelector('.add');
+const submit = document.querySelector('button[type="submit"]');
 const ageInput = document.querySelector('input[name="age"]');
 const smokerInput = document.querySelector('input[name="smoker"]');
 const relationshipInput = document.querySelector('select').options;
 const household = document.querySelector('.household_list');
-const householdArr = [];
+let householdArr = [];
 
 add.addEventListener('click', event => {
     event.preventDefault();
@@ -27,25 +28,27 @@ add.addEventListener('click', event => {
     if(messages.length > 0) {
         alert(messages.join(" and "));
     } else {
-        const newPerson = {age: ageInput.value, relationship: findRelationship(relationshipInput), smoker: isSmoker(smokerInput.checked)}
+        const newPerson = {id: newID(householdArr), age: ageInput.value, relationship: findRelationship(relationshipInput), smoker: isSmoker(smokerInput.checked)}
 
-        householdArr.push(newPerson);
+        householdArr.push(newPerson)
 
-        household.innerHTML += `
-            <div class="info__card">
-                <h1> Relationship: ${newPerson.relationship}</h1>
-                <h2> Age: ${newPerson.age} </h2>
-                <h2> Smoker: ${newPerson.smoker}  </h2>
-            </div>
-        `
-        ageInput.value = "";
-        relationshipInput[0].selected = true;
-        smokerInput.checked = false;
-        
+        addHousehold(newPerson.relationship, newPerson.age, newPerson.smoker, newPerson.id)
+        resetVal();
     }
- 
+});
+
+household.addEventListener('click', event => {
+    if(event.target.className === 'delete') {
+        const deleteID = event.target.parentNode.id;
+        householdArr = householdArr.filter(person => person.id != deleteID);
+        event.target.parentNode.remove();
+    }
 })
 
+submit.addEventListener('click', event => {
+    event.preventDefault();
+    submitForm();
+})
 
 
 const validateAge = input => {
@@ -60,6 +63,31 @@ const findRelationship = input => {
 
 const isSmoker = input => input ? "Yes" : "No";
 
+const newID = household => {
+    return household.length < 1 ? 1 : household[household.length - 1].id + 1;
+}
+
+const addHousehold = (relationship, age, smoker, id) => {
+    household.innerHTML += `
+            <div class="info__card" id=${id}>
+                <h1> Relationship: ${relationship}</h1>
+                <h2> Age: ${age} </h2>
+                <h2> Smoker: ${smoker}  </h2>
+                <button class="delete"> Delete </button>
+            </div>
+        `
+}
+
+const resetVal = () => {
+    ageInput.value = "";
+    relationshipInput[0].selected = true;
+    smokerInput.checked = false;
+}
+
+const submitForm = data => {
+    const stringify = JSON.stringify(householdArr);
+    return stringify
+}
 
 
 
