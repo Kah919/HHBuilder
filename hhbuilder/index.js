@@ -86,7 +86,7 @@ const resetVal = () => {
 
 const submitForm = data => {
     const stringify = JSON.stringify(householdArr);
-    return stringify
+    return stringify;
 }
 
 
